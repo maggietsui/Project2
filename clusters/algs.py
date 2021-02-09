@@ -90,7 +90,8 @@ class Clustering():
 
 	def calculate_distance(self, lig1, lig2):
 		"""
-	    Distance function
+	    The jaccard index takes the intersect of onbits over
+	    the union of onbits. Distance here is 1 - jaccard index 
 	    Parameters
 	    ---------
 	    lig1
@@ -100,7 +101,9 @@ class Clustering():
 
 	    Returns: distance between two ligands
 	    """
-	    pass
+	    A = lig1.onbits
+	    B = lig2.onbits
+	    return 1 - len(set(A) & set(B))/len(set(A+B))
 
 class HierarchicalClustering(Clustering):
 	"""Implementation of HC using """
@@ -127,19 +130,19 @@ class HierarchicalClustering(Clustering):
 			number of clusters to stop at
 		Returns: Dictionary of clusters with assigned ligands
 		"""
-		# Initialize cluster dictionary
+		# Initialize cluster list
 		clusters = []
 		for key in ligands.keys():
     		clusters.append([key]) # put all ligands in their own cluster
 			
-		# Initialize distance matrix
-		dist = np.zeroes(shape=(len(ligands),len(ligands)))
+		# Initialize distance matrix with inf
+		dist = np.full((len(ligands),len(ligands)), np.inf)
 
-		# loop through bottom half of matrix and fill in distances
+		# loop matrix and fill in distances, skipping diag
 		for i in range(len(ligands)):
-			for j in in range(len(ligands)):
+			for j in range(len(ligands)):
 				if i == j:
-					break
+					continue
 				dist[i,j] = calculate_distance(i,j)
 
 
@@ -162,12 +165,21 @@ class HierarchicalClustering(Clustering):
     		clusters[found_i]+= clusters[found_j]
     		del clusters[found_j]
 
-      
-			
-			# update distance matrix using single linkage
-			
 
+			# update distance matrix using single linkage
+			# set row and col at i to the min 
+			for idx in range(len(ligands)):
+				if dist[min_i, idx] == np.inf:
+					continue
+				min = min(dist[min_i, idx], dist[min_j,idx])
+				dist[min_i, idx] = min
+				dist[idx, min_i] = min
+
+			# infinity out row j and col j
+			dist[min_j, :] = np.inf
+			dist[:, min_j] = np.inf
 		
+		return clusters
 
 
 class PartitionClustering(Clustering):
