@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-
+import random
+import copy
 
 """
 algs.py
@@ -59,6 +60,7 @@ class Ligand():
 
    
 class Clustering():
+    """Base class for clustering"""
     def __init__(self):
         """
         Blah blah blah.
@@ -82,7 +84,7 @@ class Clustering():
         table = pd.read_csv("./ligand_information.csv")
         ligands = {}
         for i in range(n):
-            onbits = table.iloc[i]['OnBits'].split(",")
+            onbits = list(map(int, table.iloc[i]['OnBits'].split(",")))
             score = table.iloc[i]['Score']
             smiles = table.iloc[i]['SMILES']
             lig = Ligand(i,score,smiles,onbits)
@@ -90,25 +92,23 @@ class Clustering():
 
         return ligands
 
-    def calculate_distance(self, lig1, lig2):
+    def calculate_distance(self, A, B):
         """
         The jaccard index takes the intersect of onbits over
         the union of onbits. Distance here is 1 - jaccard index 
         Parameters
         ---------
-        lig1
-            First ligand
-        lig2
-            Second ligand
+        A
+            list of onbits for first ligand
+        B
+            list of onbits for second ligand
 
         Returns: distance between two ligands
         """
-        A = lig1.onbits
-        B = lig2.onbits
         return 1 - len(set(A) & set(B))/len(set(A+B))
 
 class HierarchicalClustering(Clustering):
-    """Implementation of HC using """
+    """Implementation of HC using single linkage"""
     def __init__(self):
         """
         Class that implements hierarchical clustering using single
@@ -145,7 +145,7 @@ class HierarchicalClustering(Clustering):
             for j in range(len(ligands)):
                 if i == j:
                     continue
-                dist[i,j] = hc.calculate_distance(ligands[i],ligands[j])
+                dist[i,j] = self.calculate_distance(ligands[i].onbits,ligands[j].onbits)
 
         while len(clusters) > k:
             # find min 
@@ -182,7 +182,7 @@ class HierarchicalClustering(Clustering):
 
 
 class PartitionClustering(Clustering):
-    """An example docstring for a class definition."""
+    """Implementation of partition clustering (kmeans)"""
     def __init__(self):
         """
         Blah blah blah.
@@ -192,10 +192,64 @@ class PartitionClustering(Clustering):
             A string to assign to the `name` instance attribute.
         """
         super().__init__()
-        self.name = name
 
-    def cluster(self, ligands):
+    def cluster(self, ligands, k):
         """
-        Return information about an instance created from ExampleClass.
+        Method that takes a set of ligands and clusters them
+        Parameters
+        ---------
+        ligands
+            dict where keys are ligand IDs and values are ligands
+        k
+            number of clusters to initialize
+        Returns: List clusters with assigned ligands
         """
-        pass
+        # choose k random ligands as centroids
+        clusters = random.sample(range(len(ligands)), k)
+        centroids = []
+        for i in range(k):
+            centroids.append(ligands[clusters[i]].onbits)
+            clusters[i] = [clusters[i]]
+        
+        same_clusters = False
+        same_iterations = 0
+        old_clusters = copy.deepcopy(clusters)
+        
+
+        # Recompute centroids until they clusters haven't changed for 2 iterations
+        while same_clusters == False:
+            new_clusters = copy.deepcopy(clusters)
+            new_centroids = copy.deepcopy(centroids)
+            print(new_clusters)
+            print(new_centroids)
+            for ligand in ligands.keys(): # Loop through ligands
+                distances = []
+                # Compute distance to each centroid
+                for centroid in centroids:
+                    dist = pc.calculate_distance(ligands[ligand].onbits, centroid)
+                    distances.append(dist)
+
+                # assign ligand to cluster with min distance (tie breaking?)
+                closest = distances.index(min(distances))
+                new_clusters[closest].append(ligand)
+                new_clusters[closest] = list(set(new_clusters[closest]))
+
+                # Add onbits to new centroids
+                new_centroids[closest].extend(ligands[ligand].onbits)
+                new_centroids[closest] = list(set(new_centroids[closest]))
+
+            # recalculate centroids 
+            centroids = copy.deepcopy(new_centroids)
+
+            # Keep track of how many times the clusters have not changed
+            if new_clusters == old_clusters:
+                same_iterations += 1
+            if same_iterations == 4:
+                same_clusters = True
+
+            old_clusters = copy.deepcopy(new_clusters)
+            
+            print(new_clusters)
+            print(new_centroids)
+        return new_clusters
+   
