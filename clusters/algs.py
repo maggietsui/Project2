@@ -14,6 +14,7 @@ class Ligand():
     def __init__(self, ID, score, SMILES, onbits):
         """
         Initialize ligand object
+
         Parameters
         ---------
         ID
@@ -63,24 +64,20 @@ class Ligand():
 class Clustering():
     """Base class for clustering"""
     def __init__(self):
-        """
-        Blah blah blah.
-        Parameters
-        ---------
-        name
-            A string to assign to the `name` instance attribute.
-        """
+        pass
 
     def get_ligands(self, n):
         """
         Gets the first n ligands from the csv
+
         Parameters
         ---------
         n
             Number of ligands to return
-
-        Returns: dictionary where keys are ligand IDs
-        and values are ligand objects
+        
+        Returns
+        ---------
+        dictionary where keys are ligand IDs and values are ligand objects
         """
         table = pd.read_csv("./ligand_information.csv")
         ligands = {}
@@ -97,6 +94,7 @@ class Clustering():
         """
         The jaccard index takes the intersect of onbits over
         the union of onbits. Distance here is 1 - jaccard index 
+
         Parameters
         ---------
         A
@@ -104,19 +102,24 @@ class Clustering():
         B
             list of onbits for second ligand
 
-        Returns: distance between two ligands
+        Returns
+        ---------
+        distance between two ligands
         """
         return 1 - len(set(A) & set(B))/len(set(A+B))
     
     def distance_matrix(self, ligands):
         """
         Computes distance matrix for a set of ligands
+
         Parameters
         ---------
         ligands
-            A dict where keys are ligandIDs and values
-            are ligands
-        Returns: distance matrix
+            A dict where keys are ligandIDs and values are ligands
+
+        Returns
+        ---------
+        distance matrix
         """
         # Initialize distance matrix
         dist = np.full((len(ligands),len(ligands)), float("inf"))
@@ -130,20 +133,28 @@ class Clustering():
         
         return dist
     
-    def silhouette_score(self, ligands, clusters):
+    def silhouette_score(self, ligands, clustering):
         """
         Calculates average silhouette score for a set of clustered
         ligands to assess quality. 
+
         Parameters
         ---------
         clusters
             A list of clusters to calculate the score for
-        Returns: Average silhouette score
+
+        Returns
+        ---------
+        Average silhouette score
         """
         # Initialize distance matrix
         dist_mat = self.distance_matrix(ligands)
         scores = []
         
+        clusters = []
+        for i in set(clustering):
+            clusters.append([j for j in range(len(clustering)) if clustering[j] == i])
+
         # loop through each ligand in each cluster
         for curr_cluster in range(len(clusters)):
             for ligand in clusters[curr_cluster]:
@@ -155,7 +166,7 @@ class Clustering():
                     if member == ligand:
                         continue
                     intra_dists.append(dist_mat[ligand,member])
-                avg_intra = mean(intra_dists)
+                avg_intra = np.mean(intra_dists)
                 
                 # mean distance betw ligand and members of the nearest cluster
                 # loop through all other clusters
@@ -167,20 +178,21 @@ class Clustering():
                     for member in clusters[other_cluster]:
                         inter_dists.append(dist_mat[ligand,member])
                     
-                    mean_inter_dists.append(mean(inter_dists))
+                    mean_inter_dists.append(np.mean(inter_dists))
                     
                 avg_inter = min(inter_dists) # get mean dist for nearest cluster
                 score = (avg_inter - avg_intra) / max(avg_inter, avg_intra)
                 scores.append(score)
         
-        return mean(scores)
+        return np.mean(scores)
     
-    def rand_index(self, ligands,clustering1, clustering2):
+    def rand_index(self, clustering1, clustering2):
         """
         Rand index measures similarity between two sets of clusters.
         The Rand index has a value between 0 and 1, with 0 indicating
         that the two data clusterings do not agree on any pair of points
         and 1 indicating that the data clusterings are exactly the same.
+
         Parameters
         ---------
         ligands
@@ -189,62 +201,48 @@ class Clustering():
             First set of clusters
         clustering2
             Second set of clusters
-        Returns: Rand index for the two sets of clusters
+
+        Returns
+        ---------
+        Rand index for the two sets of clusters
         """
-        # Convert list of clusters to list of counts
-        c1 = [0] * len(ligands)
-        for i in range(len(clustering1)):
-            for j in range(len(clustering1[i])):
-                idx = clustering1[i][j]
-                c1[idx] = i
-
-        c2 = [0] * len(ligands)
-        for i in range(len(clustering2)):
-            for j in range(len(clustering2[i])):
-                idx = clustering2[i][j]
-                c2[idx] = i
-
         # number of different pairs for each clustering
-        combos_c1 = comb(np.bincount(c1),2).sum()
-        combos_c2 = comb(np.bincount(c2),2).sum()
+        combos_c1 = comb(np.bincount(clustering1),2).sum()
+        combos_c2 = comb(np.bincount(clustering2),2).sum()
 
         # combine counts into one mat
-        mat = np.c_[(c1, c2)]
+        mat = np.c_[(clustering1, clustering2)]
 
         # go through mat and find matching pairs (same
         # in both clusterings)
         F_11 = 0
         for i in range(len(clustering1)):
             F_11 += comb(np.bincount(mat[mat[:, 0] == i, 1]), 2).sum()
-        F_01 = combos_c1 - F_11
-        F_10 = combos_c2 - F_11
+        F_01 = combos_c1 - F_11 # pairs that are together in c1
+        F_10 = combos_c2 - F_11 # pairs that are together in c2
+        # F_00 is the rest of the pairs that are different in both
         F_00 = comb(len(mat), 2) - F_11 - F_10 - F_01
         return (F_11 + F_00)/(F_11 + F_01 + F_10 + F_00)
     
 class HierarchicalClustering(Clustering):
     """Implementation of HC using single linkage"""
     def __init__(self):
-        """
-        Class that implements hierarchical clustering using single
-        linkage
-        Parameters
-        ---------
-        n_clusters
-            Default 1. Stops clustering when algorithm reaches
-            n_clusters
-        """
         super().__init__()
 
     def cluster(self, ligands, k=1):
         """
         Method that takes a set of ligands and clusters them
+
         Parameters
         ---------
         ligands
             dict where keys are ligand IDs and values are ligands
         k
             number of clusters to stop at
-        Returns: Dictionary of clusters with assigned ligands
+
+        Returns
+        ---------
+        Dictionary of clusters with assigned ligands
         """
         # Initialize cluster list
         clusters = []
@@ -285,75 +283,98 @@ class HierarchicalClustering(Clustering):
             dist[min_j, :] = np.inf
             dist[:, min_j] = np.inf
         
-        return clusters
+        c = [0] * len(ligands)
+        for i in range(len(clusters)):
+            for j in range(len(clusters[i])):
+                idx = clusters[i][j]
+                c[idx] = i
+                
+        return c
 
 
 class PartitionClustering(Clustering):
-    """Implementation of partition clustering (kmeans)"""
+    """Implementation of partition clustering (k++ means)"""
     def __init__(self):
-        """
-        Blah blah blah.
-        Parameters
-        ---------
-        name
-            A string to assign to the `name` instance attribute.
-        """
         super().__init__()
 
     def cluster(self, ligands, k):
         """
         Method that takes a set of ligands and clusters them
+        using k++ means
         Parameters
         ---------
         ligands
             dict where keys are ligand IDs and values are ligands
         k
             number of clusters to initialize
-        Returns: List clusters with assigned ligands
+
+        Returns
+        ---------
+        List clusters with assigned ligands
         """
-        # choose k random ligands as centroids
-        clusters = random.sample(range(len(ligands)), k)
+        # initialize centroids with k++ method
+        d = self.distance_matrix(ligands)
         centroids = []
+        centroids = []
+        clusters = [-1] * len(ligands)
+        chosen = []
+        # start with equal weights for all ligands
+        weights = np.ones(len(ligands))
+
         for i in range(k):
-            centroids.append(ligands[clusters[i]].onbits)
-            clusters[i] = [clusters[i]]
-        
-        #same_clusters = False
-        #same_iterations = 0
-        old_clusters = copy.deepcopy(clusters)
+            lig = random.choices(range(len(ligands)), weights)[0]
+            # prevent it from choosing the same centroids again
+            while(lig in chosen == True):
+                lig = random.choices(range(len(ligands)), weights)[0]
+            chosen.append(lig)
+            clusters[lig] = i
+            centroids.append(ligands[lig].onbits)
+            # update weights to the distance between lig and all other ligs
+            weights = copy.deepcopy(d[lig,:])
+            weights[np.where(weights == float("inf"))] = -10 # downweight the same ligand
+
+        print(clusters)
         iters = 0
 
-        # Recompute centroids until they clusters haven't changed for 2 iterations
-        #while same_clusters == False:
-        while iters < 300:
-            new_clusters = copy.deepcopy(clusters)
-            new_centroids = copy.deepcopy(centroids)
-            for ligand in ligands.keys(): # Loop through ligands
+        # Recompute centroids until a certain number of iterations is reached
+        while iters < 100:
+            if iters > 0:
+                clusters = [0] * len(ligands)
+            for ligand in ligands.keys(): # Loop through ligands               
                 distances = []
                 # Compute distance to each centroid
                 for centroid in centroids:
-                    dist = pc.calculate_distance(ligands[ligand].onbits, centroid)
+                    dist = self.calculate_distance(ligands[ligand].onbits, centroid)
                     distances.append(dist)
 
                 # assign ligand to cluster with min distance (tie breaking?)
                 closest = distances.index(min(distances))
-                new_clusters[closest].append(ligand)
-                new_clusters[closest] = list(set(new_clusters[closest]))
-
+                clusters[ligand] = closest
+                
                 # Add onbits to new centroids
-                new_centroids[closest].extend(ligands[ligand].onbits)
-                new_centroids[closest] = list(set(new_centroids[closest]))
+                centroids[closest].extend(ligands[ligand].onbits)
 
             # recalculate centroids 
-            centroids = copy.deepcopy(new_centroids)
-
-            # Keep track of how many times the clusters have not changed
-            #if new_clusters == old_clusters:
-            #    same_iterations += 1
-            #if same_iterations == 10:
-            #    same_clusters = True
+            # compute which onbits are on for at least half of the ligands
+            # assign those onbits as new centroids
+            new_centroids = []
+            for i in range(len(centroids)):
+                bits = list(set(centroids[i]))
+                new_bits = []
+                for bit in bits:
+                    if (centroids[i].count(bit)) / clusters.count(i) >= 0.5:
+                        new_bits.append(bit)
+                new_centroids.append(new_bits)
+                        
+            
+            centroids = new_centroids
             iters += 1
-            old_clusters = copy.deepcopy(new_clusters)
-
-        return new_clusters
+                
+        # Check for empty clusters
+        for i in range(k):
+            # if empty, fill in a random ligand
+            if i not in clusters:
+                lig = random.randint(0,len(ligands))
+                clusters[lig] = i
+        return clusters
         
