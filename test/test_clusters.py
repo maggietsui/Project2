@@ -1,5 +1,6 @@
 
 import pytest
+import pandas as pd
 from clusters.algs import *
 
 @pytest.fixture
