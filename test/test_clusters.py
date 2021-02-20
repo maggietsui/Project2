@@ -48,5 +48,5 @@ def test_hierarchical():
 	hc = HierarchicalClustering()
 	ligands = hc.get_ligands(4)
 	clusters = hc.cluster(ligands, k = 1)
-	assert set(clusters) = {0}
+	assert set(clusters) == {0}
 	assert len(clusters) == 4
