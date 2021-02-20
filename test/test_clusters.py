@@ -25,7 +25,7 @@ def test_distance_matrix():
 	assert d[1,2] == 1/5
 
 def test_silhouette_score():
-
+	pass
 def test_rand_index():
 	pc = PartitionClustering()
 	# see if my rand index matches the example in lecture slides
@@ -35,6 +35,8 @@ def test_rand_index():
 
 def test_partitioning():
 	pc = PartitionClustering()
+	pass
 
 def test_hierarchical():
 	hc = HierarchicalClustering()
+	pass
