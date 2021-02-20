@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Project2’s documentation! &#8212; Project2  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-clusters.algs">
+<span id="welcome-to-project2-s-documentation"></span><h1>Welcome to Project2’s documentation!<a class="headerlink" href="#module-clusters.algs" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="clusters.algs.Clustering">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clusters.algs.</span></code><code class="sig-name descname"><span class="pre">Clustering</span></code><a class="headerlink" href="#clusters.algs.Clustering" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for clustering</p>
+<dl class="py method">
+<dt id="clusters.algs.Clustering.calculate_distance">
+<code class="sig-name descname"><span class="pre">calculate_distance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.Clustering.calculate_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The jaccard index takes the intersect of onbits over
+the union of onbits. Distance here is 1 - jaccard index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – list of onbits for first ligand</p></li>
+<li><p><strong>B</strong> – list of onbits for second ligand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>distance between two ligands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clusters.algs.Clustering.distance_matrix">
+<code class="sig-name descname"><span class="pre">distance_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ligands</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.Clustering.distance_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes distance matrix for a set of ligands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ligands</strong> – A dict where keys are ligandIDs and values are ligands</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>distance matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clusters.algs.Clustering.get_ligands">
+<code class="sig-name descname"><span class="pre">get_ligands</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.Clustering.get_ligands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the first n ligands from the csv</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> – Number of ligands to return</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary where keys are ligand IDs and values are ligand objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clusters.algs.Clustering.rand_index">
+<code class="sig-name descname"><span class="pre">rand_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clustering1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clustering2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.Clustering.rand_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rand index measures similarity between two sets of clusters.
+The Rand index has a value between 0 and 1, with 0 indicating
+that the two data clusterings do not agree on any pair of points
+and 1 indicating that the data clusterings are exactly the same.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ligands</strong> – dict of ligands</p></li>
+<li><p><strong>clustering1</strong> – First set of clusters</p></li>
+<li><p><strong>clustering2</strong> – Second set of clusters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Rand index for the two sets of clusters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="clusters.algs.Clustering.silhouette_score">
+<code class="sig-name descname"><span class="pre">silhouette_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ligands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clustering</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.Clustering.silhouette_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates average silhouette score for a set of clustered
+ligands to assess quality.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>clusters</strong> – A list of clusters to calculate the score for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Average silhouette score</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clusters.algs.HierarchicalClustering">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clusters.algs.</span></code><code class="sig-name descname"><span class="pre">HierarchicalClustering</span></code><a class="headerlink" href="#clusters.algs.HierarchicalClustering" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of HC using single linkage</p>
+<dl class="py method">
+<dt id="clusters.algs.HierarchicalClustering.cluster">
+<code class="sig-name descname"><span class="pre">cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ligands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.HierarchicalClustering.cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that takes a set of ligands and clusters them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ligands</strong> – dict where keys are ligand IDs and values are ligands</p></li>
+<li><p><strong>k</strong> – number of clusters to stop at</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dictionary of clusters with assigned ligands</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="clusters.algs.Ligand">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clusters.algs.</span></code><code class="sig-name descname"><span class="pre">Ligand</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMILES</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onbits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.Ligand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that stores data about ligands including LigandID, score, SMILES, on bits</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="clusters.algs.PartitionClustering">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">clusters.algs.</span></code><code class="sig-name descname"><span class="pre">PartitionClustering</span></code><a class="headerlink" href="#clusters.algs.PartitionClustering" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of partition clustering (kmeans)</p>
+<dl class="py method">
+<dt id="clusters.algs.PartitionClustering.cluster">
+<code class="sig-name descname"><span class="pre">cluster</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ligands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clusters.algs.PartitionClustering.cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that takes a set of ligands and clusters them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ligands</strong> – dict where keys are ligand IDs and values are ligands</p></li>
+<li><p><strong>k</strong> – number of clusters to initialize</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List clusters with assigned ligands</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Project2</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Maggie Tsui.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
