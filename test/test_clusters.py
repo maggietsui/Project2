@@ -23,7 +23,7 @@ def test_distance_matrix():
 	d = pc.distance_matrix(ligands)
 	assert d.shape == (4, 4)
 	assert d[0,0] == float("inf")
-	assert d[1,2] == 1/5
+	assert d[1,2] == 1 - 1/5
 
 def test_silhouette_score():
 	pc = PartitionClustering()
