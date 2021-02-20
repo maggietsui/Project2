@@ -22,11 +22,14 @@ def test_distance_matrix():
 	ligands = pc.get_ligands(4)
 	d = pc.distance_matrix(ligands)
 	assert d.shape == (4, 4)
-	assert d[0,0] == 0
+	assert d[0,0] == float("inf")
 	assert d[1,2] == 1/5
 
 def test_silhouette_score():
-	pass
+	pc = PartitionClustering()
+	ligands = pc.get_ligands(4)
+	assert pc.silhouette_score(ligands, [0,0,1,1]) == -0.16249999999999998
+
 def test_rand_index():
 	pc = PartitionClustering()
 	# see if my rand index matches the example in lecture slides
@@ -36,8 +39,14 @@ def test_rand_index():
 
 def test_partitioning():
 	pc = PartitionClustering()
-	pass
+	ligands = pc.get_ligands(4)
+	clusters = pc.cluster(ligands, k = 2)
+	assert set(clusters) == {0, 1}
+	assert len(clusters) == 4
 
 def test_hierarchical():
 	hc = HierarchicalClustering()
-	pass
+	ligands = hc.get_ligands(4)
+	clusters = hc.cluster(ligands, k = 1)
+	assert set(clusters) = {0}
+	assert len(clusters) == 4
